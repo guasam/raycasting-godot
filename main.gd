@@ -13,16 +13,16 @@ func _ready() -> void:
 	var screenSize = get_viewport_rect().size
 	centerPos = screenSize * 0.5
 	wall = Beam.new()
-#
-#	# random walls
-#	randomize()
-#	for n in range(0, 6):
-#		var w = Beam.new()
-#		var a = Vector2(randi() % int(screenSize.x), randi() % int(screenSize.y))
-#		var b = Vector2(randi() % int(screenSize.x), randi() % int(screenSize.y))
-#		w.setPosition(a, b)
-#		w.color = Color.red
-#		walls.insert(n, w)
+
+	# random walls
+	randomize()
+	for n in range(0, 6):
+		var w = Beam.new()
+		var a = Vector2(randi() % int(screenSize.x), randi() % int(screenSize.y))
+		var b = Vector2(randi() % int(screenSize.x), randi() % int(screenSize.y))
+		w.setPosition(a, b)
+		w.color = Color.red
+		walls.insert(n, w)
 
 
 	lumen = Lumen.new(centerPos, 10, Color.gray)
@@ -42,14 +42,24 @@ func _draw() -> void:
 		var b = Beam.new()
 		b.setPosition(lumen.pos, centerPos + Vector2(get_viewport_rect().size.x * 0.5, 0).rotated(deg2rad(n)))
 		# wall intersection
-		var intersection = Beam.intersection(b, wall) # default
+#		var intersection = Beam.intersection(b, wall) # default
+		var record = INF
+		var closest = null
 
-		# cast ray towards intersection point
-		if (intersection):
+		for w in walls:
+			var intersection = Beam.intersection(b, w)
+			# cast ray towards intersection point
+			if (intersection):
+				var d = lumen.pos.distance_to(intersection)
+				if d < record:
+					record = d
+					closest = intersection
+
+		if closest:
 			b.color = Color.white
-			b.posB = intersection
-		# draw beam
-		draw_beam(b)
+			b.posB = closest
+			# draw beam
+			draw_beam(b)
 		# free up beam object
 		b.free()
 
