@@ -1,36 +1,39 @@
 extends Object
+
 class_name Beam
+
+# ====== Properties  ===============================
 
 var posA: Vector2
 var posB: Vector2
 var color: Color
 
-func _init() -> void:
-	color = Color.white
-	color.a = 0.1
+# ====== System Functions  ===============================
 
-func setPosition(_posA: Vector2, _posB: Vector2) -> void:
+
+# Initlization
+func _init(_posA: Vector2, _posB: Vector2, _color: Color = Color.white, _intensity: float = 0.105) -> void:
+	# Set positions
 	posA = _posA
 	posB = _posB
-#
-#func pintersection(beam1: Beam, beam2: Beam) -> Vector2:
-#	var a1 = beam1.posB.y - beam1.posA.y;
-#	var b1 = beam1.posA.x - beam1.posB.x;
-#	var c1 = a1 * beam1.posA.x + b1 * beam1.posA.y;
-#	var a2 = beam2.posB.y - beam2.posA.y;
-#	var b2 = beam2.posA.x - beam2.posB.x;
-#	var c2 = a2 * beam2.posA.x + b2 * beam2.posA.y;
-#	var denominator = a1 * b2 - a2 * b1;
-#
-#	if denominator == 0: return Vector2.INF
-#
-#	return Vector2(
-#		(b2 * c1 - b1 * c2) / denominator,
-#		(a1 * c2 - a2 * c1) / denominator
-#	)
+	# Set color & alpha intesity
+	color = _color
+	color.a = _intensity
 
 
-static func intersection(beam1: Beam, beam2: Beam):
+# ====== Custom Functions  ===============================
+
+
+# Set position
+func set_position(_posA: Vector2, _posB: Vector2) -> void:
+	posA = _posA
+	posB = _posB
+
+
+# ====== Static Functions  ===============================
+
+
+static func Intersection(beam1: Beam, beam2: Beam):
 	var x1 = beam1.posA.x
 	var y1 = beam1.posA.y
 	var x2 = beam1.posB.x

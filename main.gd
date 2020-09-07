@@ -1,129 +1,121 @@
 extends Node2D
 
-var wall: Beam
-var lumen: Lumen
+# ====== Inventory  ===============================
+
 var walls: Array
+var lumen: Lumen
 
-var centerPos: Vector2
+# ====== System Functions ===============================
 
+
+# Initialization
 func _init() -> void:
+	# Set default clear color (background)
 	VisualServer.set_default_clear_color(Color.black)
 
+
+# Ready for lit the world
 func _ready() -> void:
-	var screenSize = get_viewport_rect().size
-	centerPos = screenSize * 0.5
-	wall = Beam.new()
-
-#	# random walls
-#	randomize()
-#	for n in range(0, 6):
-#		var w = Beam.new()
-#		var a = Vector2(randi() % int(screenSize.x), randi() % int(screenSize.y))
-#		var b = Vector2(randi() % int(screenSize.x), randi() % int(screenSize.y))
-#		w.setPosition(a, b)
-#		w.color = Color.white
-#		walls.insert(n, w)
-
-	# boundary walls
-	var b_top = Beam.new()
-	var b_right = Beam.new()
-	var b_bottom = Beam.new()
-	var b_left = Beam.new()
-	# boundary positions
-	b_top.setPosition(Vector2(0,10), Vector2(screenSize.x, 10))
-	b_right.setPosition(Vector2(screenSize.x - 10, 0), Vector2(screenSize.x - 10, screenSize.y - 10))
-	b_bottom.setPosition(Vector2(0,screenSize.y - 10), Vector2(screenSize.x - 10, screenSize.y - 10))
-	b_left.setPosition(Vector2(10,0), Vector2(10, screenSize.y - 10))
-
-	# append to walls
-	walls.append(b_top)
-	walls.append(b_right)
-	walls.append(b_bottom)
-	walls.append(b_left)
-
-	# TANU walls
-	var points_name: Array = [
-		[Vector2(100, 100) + Vector2(-10, 134), Vector2(200, 100) + Vector2(-10, 134)],
-		[Vector2(150, 100) + Vector2(-10, 134), Vector2(150, 200) + Vector2(-10, 134)],
+	# Shuffle random
+	randomize()
+	# Walls setup
+	walls_setup(6)
+	# Create lumen
+	lumen = Lumen.new(get_viewport_rect().size * 0.5, 10, Color.white)
 
 
-		[Vector2(126, 196) + Vector2(-10 + 69, 134), Vector2(177, 104) + Vector2(-10 + 69, 134)],
-		[Vector2(222, 196) + Vector2(-10 + 69, 134), Vector2(177, 104) + Vector2(-10 + 69, 134)],
-		[Vector2(100, 100) + Vector2(-10 + 107, 134 + 74), Vector2(173, 100) + Vector2(-10 + 107, 134 + 74)],
-
-
-		[Vector2(150, 100) + Vector2(-10 + 167, 134), Vector2(150, 200) + Vector2(-10 + 167, 134)],
-		[Vector2(150, 100) + Vector2(-10 + 251, 134), Vector2(150, 200) + Vector2(-10 + 251, 134)],
-		[Vector2(67.5, 102) + Vector2(-10 + 251, 134), Vector2(150, 200) + Vector2(-10 + 251, 134)],
-
-
-		[Vector2(150, 100) + Vector2(-10 + 281, 134), Vector2(150, 200) + Vector2(-10 + 281, 134)],
-		[Vector2(150, 100) + Vector2(-10 + 364, 134), Vector2(150, 200) + Vector2(-10 + 364, 134)],
-		[Vector2(99.2, 100) + Vector2(-10 + 331.6, 134 + 99.4), Vector2(182.3, 100) + Vector2(-10 + 331.6, 134 + 99.4)],
-
-	]
-
-	for l in points_name:
-		var bm = Beam.new()
-		bm.color = Color.white
-		print(l)
-		bm.setPosition(l[0], l[1])
-		walls.append(bm)
-
-
-	lumen = Lumen.new(centerPos, 10, Color.white)
-
-
-
+# Called by the engine (if defined) to draw the canvas item
 func _draw() -> void:
-	lumen.pos = get_local_mouse_position() # follow mouse
-#	lumen.pos = get_viewport_rect().size * 0.5 # center screen
+	# Loop walls to draw
+	for wall in walls: draw_beam(wall)
+	# Draw boundaries
+	draw_boundaries()
+	# Lumen follow mouse and draw
+	lumen.pos = get_local_mouse_position()
 	draw_lumen(lumen)
+	# Cast lumen rays
+	cast_lumen_rays(lumen, walls, 360)
 
-	# set wall position
-#	wall.setPosition(centerPos + Vector2(200, -200), centerPos + Vector2(200, 200)) # default
-#	wall.setPosition(centerPos + Vector2(500, -200), centerPos + Vector2(100, 200))
-#	wall.color = Color.white
-#	draw_beam(wall)
 
-	for n in range(0, 360):
-		var b = Beam.new()
-		b.setPosition(lumen.pos, Vector2(1024, 600).rotated(deg2rad(n)))
-		#b.setPosition(lumen.pos, centerPos + Vector2(get_viewport_rect().size.x * 0.5, 0).rotated(deg2rad(n)))
+# Processing happens at every frame and updates as fast as possible
+func _process(delta: float) -> void:
+	# Drawing update
+	update()
 
+
+# ====== Custom Functions ===============================
+
+
+# Draw beam
+func draw_beam(beam: Beam) -> void:
+	draw_line(beam.posA, beam.posB, beam.color, 1, true)
+
+
+# Draw boundaries
+func draw_boundaries(offset: int = 0) -> void:
+	# Screen size
+	var size: Vector2 = get_viewport_rect().size
+	# Boundaries points on screen
+	# Order : Top, Right, Bottom, Left
+	var bounds: Array = [
+		[Vector2(0, offset), Vector2(size.x, offset)],
+		[Vector2(size.x - offset, 0), Vector2(size.x - offset, size.y - offset)],
+		[Vector2(0,size.y - offset), Vector2(size.x - offset, size.y - offset)],
+		[Vector2(offset,0), Vector2(offset, size.y - offset)],
+	]
+	# Loop bounds to draw
+	for boundPos in bounds:
+		# Create & draw beam for boundary
+		var bound_beam = Beam.new(boundPos[0], boundPos[1], Color.gray)
+		draw_beam(bound_beam)
+
+
+# Draw lumen
+func draw_lumen(lumen: Lumen) -> void:
+	draw_circle(lumen.pos, lumen.radius, lumen.color)
+
+
+# Random screen position
+func screen_rand_pos() -> Vector2:
+	var size = get_viewport_rect().size
+	return Vector2(randi() % int(size.x), randi() % int(size.y))
+
+
+# Walls setup
+func walls_setup(walls_count: int = 2) -> void:
+	# Loop walls count
+	for n in range(0, walls_count):
+		# Create beam for wall at random position
+		var wall_beam = Beam.new(screen_rand_pos(), screen_rand_pos(), Color.white, 1)
+		# Insert wall into array
+		walls.insert(n, wall_beam)
+
+
+# Cast lumen rays on walls
+func cast_lumen_rays(lumen: Lumen, walls: Array, rays_count: int = 360) -> void:
+	# Loop for rays
+	for n in range(0, rays_count):
+		# Ray records, Closest Ray cast point, Ray
 		var record = INF
 		var closest:Vector2 = Vector2.ZERO
+		var ray = Beam.new(lumen.pos, Vector2(1024, 600).rotated(deg2rad(n)))
 
-		for w in walls:
-			var intersection = Beam.intersection(b, w)
-			# cast ray towards intersection point
+		# Loop for walls
+		for wall in walls:
+			var intersection = Beam.Intersection(ray, wall)
+			# Cast ray on intersection point
 			if (intersection):
 				var d = lumen.pos.distance_to(intersection)
 				if d < record:
 					record = d
 					closest = intersection
 
+		# Got closest wall collision
 		if closest:
-			b.color = Color.white
-			b.color.a = 0.25
-			b.posB = closest
+			# Cast ray on closest wall
+			ray.posB = closest
 
-		# draw beam
-		draw_beam(b)
-		# free up beam object
-		b.free()
+		# Draw ray and free object from memory to prevent memory leak
+		draw_beam(ray)
+		ray.free()
 
-
-	for w in walls:
-		draw_beam(w)
-
-
-func _process(delta: float) -> void:
-	update()
-	pass
-
-func draw_beam(beam: Beam) -> void:
-	draw_line(beam.posA, beam.posB, beam.color, 1, true)
-
-func draw_lumen(lumen: Lumen) -> void:
-	draw_circle(lumen.pos, lumen.radius, lumen.color)
