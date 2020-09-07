@@ -26,9 +26,13 @@ _global_script_class_icons={
 
 [application]
 
-config/name="raycast-2d-godot"
+config/name="Lumen"
+config/description="Light source simulation for learning Ray Casting with obstacle walls"
 run/main_scene="res://main.tscn"
+boot_splash/image="res://splash.png"
+boot_splash/bg_color=Color( 0, 0, 0, 1 )
 config/icon="res://icon.png"
+config/windows_native_icon="res://icon.ico"
 
 [display]
 
