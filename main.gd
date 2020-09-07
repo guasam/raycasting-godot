@@ -14,15 +14,15 @@ func _ready() -> void:
 	centerPos = screenSize * 0.5
 	wall = Beam.new()
 
-	# random walls
-	randomize()
-	for n in range(0, 6):
-		var w = Beam.new()
-		var a = Vector2(randi() % int(screenSize.x), randi() % int(screenSize.y))
-		var b = Vector2(randi() % int(screenSize.x), randi() % int(screenSize.y))
-		w.setPosition(a, b)
-		w.color = Color.white
-		walls.insert(n, w)
+#	# random walls
+#	randomize()
+#	for n in range(0, 6):
+#		var w = Beam.new()
+#		var a = Vector2(randi() % int(screenSize.x), randi() % int(screenSize.y))
+#		var b = Vector2(randi() % int(screenSize.x), randi() % int(screenSize.y))
+#		w.setPosition(a, b)
+#		w.color = Color.white
+#		walls.insert(n, w)
 
 	# boundary walls
 	var b_top = Beam.new()
@@ -35,12 +35,40 @@ func _ready() -> void:
 	b_bottom.setPosition(Vector2(0,screenSize.y - 10), Vector2(screenSize.x - 10, screenSize.y - 10))
 	b_left.setPosition(Vector2(10,0), Vector2(10, screenSize.y - 10))
 
-
 	# append to walls
 	walls.append(b_top)
 	walls.append(b_right)
 	walls.append(b_bottom)
 	walls.append(b_left)
+
+	# TANU walls
+	var points_name: Array = [
+		[Vector2(100, 100) + Vector2(-10, 134), Vector2(200, 100) + Vector2(-10, 134)],
+		[Vector2(150, 100) + Vector2(-10, 134), Vector2(150, 200) + Vector2(-10, 134)],
+
+
+		[Vector2(126, 196) + Vector2(-10 + 69, 134), Vector2(177, 104) + Vector2(-10 + 69, 134)],
+		[Vector2(222, 196) + Vector2(-10 + 69, 134), Vector2(177, 104) + Vector2(-10 + 69, 134)],
+		[Vector2(100, 100) + Vector2(-10 + 107, 134 + 74), Vector2(173, 100) + Vector2(-10 + 107, 134 + 74)],
+
+
+		[Vector2(150, 100) + Vector2(-10 + 167, 134), Vector2(150, 200) + Vector2(-10 + 167, 134)],
+		[Vector2(150, 100) + Vector2(-10 + 251, 134), Vector2(150, 200) + Vector2(-10 + 251, 134)],
+		[Vector2(67.5, 102) + Vector2(-10 + 251, 134), Vector2(150, 200) + Vector2(-10 + 251, 134)],
+
+
+		[Vector2(150, 100) + Vector2(-10 + 281, 134), Vector2(150, 200) + Vector2(-10 + 281, 134)],
+		[Vector2(150, 100) + Vector2(-10 + 364, 134), Vector2(150, 200) + Vector2(-10 + 364, 134)],
+		[Vector2(99.2, 100) + Vector2(-10 + 331.6, 134 + 99.4), Vector2(182.3, 100) + Vector2(-10 + 331.6, 134 + 99.4)],
+
+	]
+
+	for l in points_name:
+		var bm = Beam.new()
+		bm.color = Color.white
+		print(l)
+		bm.setPosition(l[0], l[1])
+		walls.append(bm)
 
 
 	lumen = Lumen.new(centerPos, 10, Color.white)

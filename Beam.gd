@@ -6,7 +6,7 @@ var posB: Vector2
 var color: Color
 
 func _init() -> void:
-	color = Color.gray
+	color = Color.white
 	color.a = 0.1
 
 func setPosition(_posA: Vector2, _posB: Vector2) -> void:
