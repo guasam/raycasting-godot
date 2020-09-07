@@ -2,8 +2,8 @@ extends Node2D
 
 # ====== Inventory  ===============================
 
-var walls: Array
-var lumen: Lumen
+var _walls: Array
+var _lumen: Lumen
 
 # ====== System Functions ===============================
 
@@ -21,24 +21,24 @@ func _ready() -> void:
 	# Walls setup
 	walls_setup(6)
 	# Create lumen
-	lumen = Lumen.new(get_viewport_rect().size * 0.5, 10, Color.white)
+	_lumen = Lumen.new(get_viewport_rect().size * 0.5, 10, Color.white)
 
 
 # Called by the engine (if defined) to draw the canvas item
 func _draw() -> void:
 	# Loop walls to draw
-	for wall in walls: draw_beam(wall)
+	for wall in _walls: draw_beam(wall)
 	# Draw boundaries
 	draw_boundaries()
 	# Lumen follow mouse and draw
-	lumen.pos = get_local_mouse_position()
-	draw_lumen(lumen)
+	_lumen.pos = get_local_mouse_position()
+	draw_lumen(_lumen)
 	# Cast lumen rays
-	cast_lumen_rays(lumen, walls, 360)
+	cast_lumen_rays(_lumen, _walls, 360)
 
 
 # Processing happens at every frame and updates as fast as possible
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	# Drawing update
 	update()
 
@@ -88,7 +88,7 @@ func walls_setup(walls_count: int = 2) -> void:
 		# Create beam for wall at random position
 		var wall_beam = Beam.new(screen_rand_pos(), screen_rand_pos(), Color.white, 1)
 		# Insert wall into array
-		walls.insert(n, wall_beam)
+		_walls.insert(n, wall_beam)
 
 
 # Cast lumen rays on walls
