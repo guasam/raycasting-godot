@@ -12,7 +12,7 @@ var color: Color
 
 
 # Initlization
-func _init(_posA: Vector2, _posB: Vector2, _color: Color = Color.white, _intensity: float = 0.105) -> void:
+func _init(_posA: Vector2, _posB: Vector2, _color: Color = Color.white, _intensity: float = 0.2) -> void:
 	# Set positions
 	posA = _posA
 	posB = _posB
